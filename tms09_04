@@ -1,0 +1,148 @@
+#include "SPI.h"
+#include <SoftwareSerial.h>
+int motorPin = 9;
+int emstop_Pin = 4;
+int endstop_up_Pin = 5;
+int endstop_down_Pin = 6;
+int speed;
+int spset = 64;
+long a = 0;
+int b = 0;
+int c = 0;
+int x = 0;
+
+   int state = 0;
+   int csPin = 3;
+   int buttonPin = 2; //the button pin is connected to
+   int buttonState = 0;
+
+   boolean t0 = 0;
+    boolean t1 = 0;
+    boolean t2 = 0;
+   
+
+   const int ledPin = 8;//the LED pin is connected to
+
+void setup() {
+   
+   pinMode(7, OUTPUT);
+   pinMode(motorPin, OUTPUT);
+   Serial.begin(9600);
+   while (! Serial);
+   Serial.println("Speed 0 to 255");
+  
+   pinMode(ledPin, OUTPUT);
+   pinMode(buttonPin, INPUT);
+   SPI.begin();
+   pinMode (csPin, OUTPUT); 
+   digitalWrite (csPin, LOW);
+    digitalWrite(8,LOW);
+   
+}
+
+
+
+void loop()
+{
+
+
+//digitalWrite(8, !digitalRead(8));
+    a++; 
+    if(a>10120)
+      {//Serial.println (a);
+        a= 0;
+        t0=1;   //set flag t0
+      // digitalWrite(7, !digitalRead(7));
+        }     
+
+        
+           
+if(t0==1){       //90ms
+          t0=0;
+           //digitalWrite(8, !digitalRead(8)); 
+           int abcd;
+           abcd = Read_pins();
+           //Serial.println (abcd);
+           
+   if (c <spset){
+              spset--;
+            //  spset++;
+             // Serial.println ('B');
+             // Serial.println (spset);
+             // Serial.println (c);
+              }
+            //else spset++;
+            
+           if  (c >spset){
+              spset ++;
+              //digitalWrite(7, !digitalRead(7));
+              //Serial.println ('a');
+              //Serial.println (spset);
+              //Serial.println (c);
+              }
+              //Serial.println (spset);
+            //Serial.println (speed);
+            SPI.transfer(0);
+            SPI.transfer(spset);
+            
+  b++; 
+    if(b>15)
+      {//Serial.println (b);
+        b= 0;
+        t1=1;   //set flag t1
+        Serial.println ('a');
+        Serial.println (spset);
+        Serial.println (c);
+        Serial.println (abcd);
+       digitalWrite(8, !digitalRead(8));}  //30ms
+      }
+
+        
+
+
+
+  
+ if (Serial.available()) {
+      int speed = Serial.parseInt();
+      if (speed >= 0 && speed <= 255) {
+         analogWrite(motorPin, speed); //test pw
+         c = speed;
+         //SPI.transfer(0);
+         //SPI.transfer(speed);
+         Serial.println (speed);
+         Serial.println (spset);
+         //digitalWrite(7, !digitalRead(7));
+      }
+      
+   }
+
+                
+    //buttonState = digitalRead(buttonPin);
+
+    if (buttonState == HIGH) {
+      x = 0;
+      }
+    
+    if ( x < 3) { // number of cycles 2
+                  x++;
+      Serial.println (x); // prints number of cycles
+      Serial.println (spset);
+    }
+
+    
+     //for( x = 0; x < 2; x++) { // number of cycles 2
+
+      //Serial.println (x); // prints number of cycles 
+    
+      //analogWrite(buttonPin, x);
+      //Serial.print(x);
+      //delay(100);
+
+}
+int Read_pins(){
+  int abc;
+  abc = digitalRead(buttonPin);
+  //result = ;
+  
+  return abc;
+}
